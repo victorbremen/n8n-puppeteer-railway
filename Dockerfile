@@ -1,7 +1,7 @@
-FROM n8nio/n8n:latest
+# Usa una imagen base que sí tenga apt-get (como Debian)
+FROM node:20-slim
 
-USER root
-
+# Instala dependencias necesarias para Puppeteer + Chromium
 RUN apt-get update && apt-get install -y \
     chromium \
     fonts-liberation \
@@ -24,11 +24,17 @@ RUN apt-get update && apt-get install -y \
     --no-install-recommends && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-USER node
-WORKDIR /data
-COPY package.json .
+# Crea una carpeta de trabajo
+WORKDIR /app
+
+# Copia tus archivos al contenedor
+COPY . .
+
+# Instala tus dependencias npm
 RUN npm install
 
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+# Expone un puerto por si quieres hacer server (opcional)
+EXPOSE 3000
 
-COPY custom-scripts ./custom-scripts
+# Ejecuta el script cuando el contenedor arranca
+CMD ["node", "custom-scripts/scrapeInfoJobs.js"]
