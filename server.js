@@ -1,18 +1,21 @@
 const express = require('express');
-const scrapeInfoJobs = require('./custom-scripts/scrapeInfoJobs');
+const { exec } = require('child_process');
 const app = express();
-const port = process.env.PORT || 3000;
 
-app.get('/run-scraper', async (req, res) => {
-  try {
-    const results = await scrapeInfoJobs();
-    res.json({ success: true, data: results });
-  } catch (error) {
-    console.error('Scraping failed:', error);
-    res.status(500).json({ success: false, error: error.message });
-  }
+const PORT = process.env.PORT || 3000;
+
+app.get('/run-scraper', (req, res) => {
+    exec('node custom-scripts/scrapeInfoJobs.js', (error, stdout, stderr) => {
+        if (error) {
+            console.error(`exec error: ${error}`);
+            return res.status(500).send(`Error running scraper: ${error.message}`);
+        }
+        console.log(`stdout: ${stdout}`);
+        console.error(`stderr: ${stderr}`);
+        res.send('Scraping complete!');
+    });
 });
 
-app.listen(port, () => {
-  console.log(`🚀 Server running on http://localhost:${port}`);
+app.listen(PORT, () => {
+    console.log(`✅ Server listening on port ${PORT}`);
 });
