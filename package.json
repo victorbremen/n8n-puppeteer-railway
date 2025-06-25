@@ -2,8 +2,12 @@
   "name": "n8n-puppeteer",
   "version": "1.0.0",
   "description": "n8n with puppeteer and chromium on Railway",
-  "main": "custom-scripts/scrapeInfoJobs.js",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
   "dependencies": {
+    "express": "^4.18.4",
     "puppeteer-core": "^21.3.8",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.1"
