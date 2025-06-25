@@ -12,7 +12,6 @@ async function scrapeInfoJobs() {
 
     const page = await browser.newPage();
 
-    // Set a realistic user agent and viewport to better mimic a real user
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
     await page.setViewport({ width: 1280, height: 800 });
 
@@ -20,7 +19,6 @@ async function scrapeInfoJobs() {
     console.log(`→ Navigating to ${url}`);
     await page.goto(url, { waitUntil: 'networkidle2' });
 
-    // The stealth plugin may prevent the CAPTCHA from appearing at all.
     try {
         const captchaSelector = 'div.geetest_radar_tip';
         console.log('→ Looking for Geetest CAPTCHA...');
@@ -33,7 +31,6 @@ async function scrapeInfoJobs() {
         console.log('→ Geetest CAPTCHA not found.');
     }
 
-    // Handle the cookie consent banner
     try {
         const cookieButtonSelector = 'button[data-testid="TcfAccept"]';
         console.log('→ Looking for cookie consent button...');
@@ -47,7 +44,6 @@ async function scrapeInfoJobs() {
         console.log('→ Cookie consent banner not found or already accepted.');
     }
 
-    // Wait for the main container of all job listings to ensure they are all loaded.
     const jobListContainerSelector = 'ul.ij-List';
     console.log(`→ Waiting for job list container: "${jobListContainerSelector}"`);
     await page.waitForSelector(jobListContainerSelector, { timeout: 30000 });
@@ -61,22 +57,17 @@ async function scrapeInfoJobs() {
             const companyElement = card.querySelector('a.ij-OfferCardContent-description-subtitle-link');
             const locationElement = card.querySelector('span.ij-OfferCardContent-description-list-item-truncate');
             const descriptionElement = card.querySelector('p.ij-OfferCardContent-description-description');
-
             const title = titleElement?.innerText.trim() ?? 'N/A';
             const link = titleElement?.href ?? 'N/A';
             const company = companyElement?.innerText.trim() ?? 'N/A';
             const location = locationElement?.innerText.trim() ?? 'N/A';
             const description = descriptionElement?.innerText.trim() ?? 'N/A';
-
-            return { title, company, location, description, link };
+            return { title, link, company, location, description };
         });
     });
 
-    console.log(`✅ Found ${jobs.length} jobs:`);
-    console.log(jobs);
-
     await browser.close();
-    console.log('→ Browser closed.');
+    return jobs;
 }
 
-scrapeInfoJobs();
+module.exports = scrapeInfoJobs;
