@@ -61,7 +61,22 @@ async function scrapeInfoJobs() {
             const companyElement = card.querySelector('a.ij-OfferCardContent-description-subtitle-link');
             const locationElement = card.querySelector('span.ij-OfferCardContent-description-list-item-truncate');
             const descriptionElement = card.querySelector('p.ij-OfferCardContent-description-description');
+
             const title = titleElement?.innerText.trim() ?? 'N/A';
             const link = titleElement?.href ?? 'N/A';
             const company = companyElement?.innerText.trim() ?? 'N/A';
             const location = locationElement?.innerText.trim() ?? 'N/A';
+            const description = descriptionElement?.innerText.trim() ?? 'N/A';
+
+            return { title, company, location, description, link };
+        });
+    });
+
+    console.log(`✅ Found ${jobs.length} jobs:`);
+    console.log(jobs);
+
+    await browser.close();
+    console.log('→ Browser closed.');
+}
+
+scrapeInfoJobs();
